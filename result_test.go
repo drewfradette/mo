@@ -195,3 +195,18 @@ func TestResultFlatMap(t *testing.T) {
 	is.Equal(Result[int]{value: 42, isErr: false, err: nil}, opt1)
 	is.Equal(Result[int]{value: 0, isErr: true, err: assert.AnError}, opt2)
 }
+
+func TestResultFlatMapErr(t *testing.T) {
+	is := assert.New(t)
+
+	opt1 := Ok(21).FlatMapErr(func(err error) Result[int] {
+		is.Fail("should not be called")
+		return Ok(42)
+	})
+	opt2 := Err[int](assert.AnError).FlatMapErr(func(err error) Result[int] {
+		return Ok(42)
+	})
+
+	is.Equal(Result[int]{value: 21, isErr: false, err: nil}, opt1)
+	is.Equal(Result[int]{value: 42, isErr: false, err: nil}, opt2)
+}
